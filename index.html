@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShutdownPro</title>
+    <script type="module" src="/src/main.ts" defer></script>
+  </head>
+
+  <body>
+    <main class="container">
+      <h1>ShutdownPro</h1>
+      <p class="subtitle">Extinction programmée et propre de votre PC</p>
+
+      <div class="card">
+        <label for="delay-select">Délai avant extinction</label>
+        <select id="delay-select">
+          <option value="60">1 minute</option>
+          <option value="300" selected>5 minutes</option>
+          <option value="600">10 minutes</option>
+          <option value="900">15 minutes</option>
+          <option value="1800">30 minutes</option>
+          <option value="2700">45 minutes</option>
+          <option value="3600">1 heure</option>
+          <option value="7200">2 heures</option>
+          <option value="custom">Personnalisé…</option>
+        </select>
+
+        <div id="custom-row" class="custom-row" inert>
+          <div class="custom-row-inner">
+            <input
+              id="custom-input"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="Minutes"
+              aria-label="Délai personnalisé, en minutes"
+            />
+            <span>minutes</span>
+          </div>
+        </div>
+
+        <div class="row actions">
+          <button id="start-btn" type="button">Programmer l'extinction</button>
+          <button id="cancel-btn" type="button" class="secondary">
+            Annuler
+          </button>
+        </div>
+
+        <div id="status" class="status">
+          <span
+            id="status-label"
+            class="status-label"
+            role="status"
+            aria-live="polite"
+          ></span>
+          <span id="status-timer" class="status-timer hidden" aria-hidden="true"></span>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

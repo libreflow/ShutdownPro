@@ -1,0 +1,243 @@
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  color: #0f0f0f;
+  background-color: #f6f6f6;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+.container {
+  margin: 0;
+  padding: 10vh 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 0.2em;
+  text-wrap: balance;
+}
+
+.subtitle {
+  margin-top: 0;
+  opacity: 0.7;
+  text-wrap: pretty;
+}
+
+.card {
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background-color: rgba(127, 127, 127, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  animation: card-in 320ms ease-out;
+}
+
+.card label {
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.custom-row {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition-property: grid-template-rows, opacity;
+  transition-duration: 200ms;
+  transition-timing-function: ease-out;
+}
+
+.custom-row.visible {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.custom-row-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.custom-row-inner span {
+  opacity: 0.7;
+}
+
+.actions {
+  margin-top: 0.4rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+select,
+input,
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  min-height: 40px;
+  padding: 0.6em 1em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  color: #0f0f0f;
+  background-color: #ffffff;
+  transition-property: border-color, background-color, box-shadow, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
+  outline: none;
+}
+
+select:focus-visible,
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid #396cd8;
+  outline-offset: 2px;
+}
+
+select {
+  width: 100%;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: #396cd8;
+}
+
+button:active:not(:disabled) {
+  border-color: #396cd8;
+  background-color: #e8e8e8;
+  transform: scale(0.96);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+button.secondary {
+  background-color: transparent;
+  border: 1px solid rgba(90, 90, 90, 0.7);
+}
+
+.status {
+  min-height: 2.6em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+}
+
+.status-label {
+  font-weight: 600;
+  text-wrap: pretty;
+  transition: color 200ms ease-out;
+}
+
+.status-timer {
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.status.error .status-label {
+  color: #b8272f;
+  font-weight: 500;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
+  }
+
+  button:active:not(:disabled) {
+    transform: none;
+  }
+
+  .custom-row,
+  select,
+  input,
+  button,
+  .status-label {
+    transition: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f6f6f6;
+    background-color: #2f2f2f;
+  }
+
+  .card {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  select,
+  input,
+  button {
+    color: #ffffff;
+    background-color: #0f0f0f98;
+  }
+
+  button:active:not(:disabled) {
+    background-color: #0f0f0f69;
+  }
+
+  button.secondary {
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  select:focus-visible,
+  input:focus-visible,
+  button:focus-visible {
+    outline-color: #89b4ff;
+  }
+
+  .status.error .status-label {
+    color: #ff9494;
+  }
+}
