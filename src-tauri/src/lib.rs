@@ -1,6 +1,6 @@
 use std::process::{Command, Output};
 use tauri::{
-    menu::{Menu, MenuItem, PredefinedMenuItem},
+    menu::{Menu, MenuItem, PredefinedMenuItem, Submenu},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     AppHandle, Emitter, Manager,
 };
@@ -94,10 +94,39 @@ fn cancel_shutdown() -> Result<(), String> {
     do_cancel_shutdown()
 }
 
+/// Éteint ou redémarre l'ordinateur sans délai. `action` vaut `"shutdown"`
+/// ou `"restart"`.
+fn do_immediate_action(action: &str) -> Result<(), String> {
+    let (flag, message) = match action {
+        "shutdown" => ("/s", "Extinction immédiate par ShutdownPro"),
+        "restart" => ("/r", "Redémarrage immédiat par ShutdownPro"),
+        _ => return Err("Action inconnue.".into()),
+    };
+
+    let output = run_shutdown_command(&[flag, "/t", "0", "/c", message])?;
+
+    if output.status.success() {
+        Ok(())
+    } else {
+        Err(command_error(&output))
+    }
+}
+
 #[derive(Clone, serde::Serialize)]
 struct CancelResult {
     success: bool,
     message: String,
+}
+
+/// Résultat d'une action d'extinction/redémarrage déclenchée depuis le menu
+/// du system tray, envoyé à la fenêtre principale pour qu'elle reste
+/// synchronisée (countdown affiché, message d'erreur, etc.).
+#[derive(Clone, serde::Serialize)]
+struct TrayScheduleResult {
+    success: bool,
+    message: String,
+    seconds: Option<u32>,
+    action: String,
 }
 
 fn show_main_window(app: &AppHandle) {
@@ -106,6 +135,38 @@ fn show_main_window(app: &AppHandle) {
         let _ = window.show();
         let _ = window.set_focus();
     }
+}
+
+/// Traite un clic sur une entrée `shutdown_*`/`restart_*` du menu tray.
+/// `spec` vaut `"now"` pour une action immédiate, ou un nombre de secondes.
+fn handle_tray_schedule(app: &AppHandle, action: &str, spec: &str) {
+    let (result, seconds) = if spec == "now" {
+        (do_immediate_action(action), None)
+    } else {
+        match spec.parse::<u32>() {
+            Ok(seconds) => (schedule_shutdown(seconds, action.to_string()), Some(seconds)),
+            Err(_) => (Err("Délai invalide.".to_string()), None),
+        }
+    };
+
+    // Pour une action programmée, on affiche la fenêtre pour que le
+    // countdown soit visible ; une action immédiate n'a pas cet intérêt.
+    if seconds.is_some() {
+        show_main_window(app);
+    }
+
+    let (success, message) = match result {
+        Ok(()) => (true, String::new()),
+        Err(err) => (false, err),
+    };
+
+    let payload = TrayScheduleResult {
+        success,
+        message,
+        seconds,
+        action: action.to_string(),
+    };
+    let _ = app.emit("tray-schedule-result", payload);
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -126,9 +187,41 @@ pub fn run() {
                 MenuItem::with_id(app, "cancel", "Annuler l'extinction", true, None::<&str>)?;
             let quit_item = MenuItem::with_id(app, "quit", "Quitter", true, None::<&str>)?;
             let separator = PredefinedMenuItem::separator(app)?;
+
+            let shutdown_now_item = MenuItem::with_id(app, "shutdown_now", "Maintenant", true, None::<&str>)?;
+            let shutdown_15_item = MenuItem::with_id(app, "shutdown_900", "Dans 15 minutes", true, None::<&str>)?;
+            let shutdown_30_item = MenuItem::with_id(app, "shutdown_1800", "Dans 30 minutes", true, None::<&str>)?;
+            let shutdown_60_item = MenuItem::with_id(app, "shutdown_3600", "Dans 1 heure", true, None::<&str>)?;
+            let shutdown_submenu = Submenu::with_items(
+                app,
+                "Éteindre",
+                true,
+                &[&shutdown_now_item, &shutdown_15_item, &shutdown_30_item, &shutdown_60_item],
+            )?;
+
+            let restart_now_item = MenuItem::with_id(app, "restart_now", "Maintenant", true, None::<&str>)?;
+            let restart_15_item = MenuItem::with_id(app, "restart_900", "Dans 15 minutes", true, None::<&str>)?;
+            let restart_30_item = MenuItem::with_id(app, "restart_1800", "Dans 30 minutes", true, None::<&str>)?;
+            let restart_60_item = MenuItem::with_id(app, "restart_3600", "Dans 1 heure", true, None::<&str>)?;
+            let restart_submenu = Submenu::with_items(
+                app,
+                "Redémarrer",
+                true,
+                &[&restart_now_item, &restart_15_item, &restart_30_item, &restart_60_item],
+            )?;
+
             let menu = Menu::with_items(
                 app,
-                &[&show_item, &separator, &cancel_item, &separator, &quit_item],
+                &[
+                    &show_item,
+                    &separator,
+                    &shutdown_submenu,
+                    &restart_submenu,
+                    &separator,
+                    &cancel_item,
+                    &separator,
+                    &quit_item,
+                ],
             )?;
 
             let mut tray_builder = TrayIconBuilder::new()
@@ -159,7 +252,13 @@ pub fn run() {
                         let _ = app.emit("tray-cancel-result", payload);
                     }
                     "quit" => app.exit(0),
-                    _ => {}
+                    other => {
+                        if let Some(spec) = other.strip_prefix("shutdown_") {
+                            handle_tray_schedule(app, "shutdown", spec);
+                        } else if let Some(spec) = other.strip_prefix("restart_") {
+                            handle_tray_schedule(app, "restart", spec);
+                        }
+                    }
                 })
                 .on_tray_icon_event(|tray, event| {
                     if let TrayIconEvent::Click {

@@ -404,6 +404,40 @@ async function handleCancel() {
   }
 }
 
+interface TrayScheduleResult {
+  success: boolean;
+  message: string;
+  seconds: number | null;
+  action: ScheduledAction;
+}
+
+// Déclenchée par un clic sur "Maintenant" / "Dans X minutes" dans le menu du
+// system tray : synchronise l'UI de la fenêtre principale avec l'action
+// exécutée côté Rust (countdown démarré, ou extinction déjà en cours).
+function handleTrayScheduleResult({ success, message, seconds, action }: TrayScheduleResult) {
+  if (!success) {
+    setStatus(`Erreur : ${message}`, true);
+    return;
+  }
+
+  setAction(action);
+  const { noun, scheduledWord, inProgress } = actionWording(action);
+
+  if (seconds === null) {
+    stopCountdown();
+    clearPersistedSchedule();
+    setScheduledUiState(false);
+    setStatus(inProgress);
+    void notify("ShutdownPro", inProgress);
+    return;
+  }
+
+  const endsAt = persistScheduleEnd(seconds, action);
+  setScheduledUiState(true);
+  startCountdown(endsAt, action);
+  void notify(`${noun} ${scheduledWord}`, `${noun} ${scheduledWord} dans ${formatDuration(seconds)}.`);
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   delaySelectWrapEl = document.querySelector("#delay-select-wrap");
   delaySelectBtnEl = document.querySelector("#delay-select-btn");
@@ -476,6 +510,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
   listen<{ success: boolean; message: string }>("tray-cancel-result", (event) => {
     handleCancelOutcome(event.payload.success, event.payload.message);
+  });
+
+  listen<TrayScheduleResult>("tray-schedule-result", (event) => {
+    handleTrayScheduleResult(event.payload);
   });
 
   void initAutostart();
