@@ -14,18 +14,58 @@
       <p class="subtitle">Extinction programmée et propre de votre PC</p>
 
       <div class="card">
-        <label for="delay-select">Délai avant extinction</label>
-        <select id="delay-select">
-          <option value="60">1 minute</option>
-          <option value="300" selected>5 minutes</option>
-          <option value="600">10 minutes</option>
-          <option value="900">15 minutes</option>
-          <option value="1800">30 minutes</option>
-          <option value="2700">45 minutes</option>
-          <option value="3600">1 heure</option>
-          <option value="7200">2 heures</option>
-          <option value="custom">Personnalisé…</option>
-        </select>
+        <label id="action-label" class="eyebrow">Action</label>
+        <div class="row toggle-row" role="group" aria-labelledby="action-label">
+          <button id="action-shutdown-btn" type="button" class="toggle active">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v8" /><path d="M18.36 6.64a9 9 0 1 1-12.73 0" /></svg>
+            Éteindre
+          </button>
+          <button id="action-restart-btn" type="button" class="toggle">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36" /><path d="M21 3v6h-6" /></svg>
+            Redémarrer
+          </button>
+        </div>
+
+        <label id="mode-label" class="eyebrow">Quand</label>
+        <div class="row toggle-row" role="group" aria-labelledby="mode-label">
+          <button id="mode-relative-btn" type="button" class="toggle active">
+            Dans…
+          </button>
+          <button id="mode-absolute-btn" type="button" class="toggle">
+            À heure fixe
+          </button>
+        </div>
+
+        <div id="delay-select-wrap" class="select-wrap">
+          <button
+            id="delay-select-btn"
+            type="button"
+            class="select-trigger"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="delay-select-list"
+          >
+            <span id="delay-select-value">5 minutes</span>
+            <span class="select-chevron" aria-hidden="true">▾</span>
+          </button>
+          <ul
+            id="delay-select-list"
+            class="select-list"
+            role="listbox"
+            aria-label="Délai avant l'action"
+            inert
+          >
+            <li role="option" tabindex="-1" data-value="60">1 minute</li>
+            <li role="option" tabindex="-1" data-value="300" aria-selected="true">5 minutes</li>
+            <li role="option" tabindex="-1" data-value="600">10 minutes</li>
+            <li role="option" tabindex="-1" data-value="900">15 minutes</li>
+            <li role="option" tabindex="-1" data-value="1800">30 minutes</li>
+            <li role="option" tabindex="-1" data-value="2700">45 minutes</li>
+            <li role="option" tabindex="-1" data-value="3600">1 heure</li>
+            <li role="option" tabindex="-1" data-value="7200">2 heures</li>
+            <li role="option" tabindex="-1" data-value="custom">Personnalisé…</li>
+          </ul>
+        </div>
 
         <div id="custom-row" class="custom-row" inert>
           <div class="custom-row-inner">
@@ -33,16 +73,26 @@
               id="custom-input"
               type="number"
               min="1"
+              max="1440"
               step="1"
               placeholder="Minutes"
-              aria-label="Délai personnalisé, en minutes"
+              aria-label="Délai personnalisé, en minutes (24h max)"
             />
             <span>minutes</span>
           </div>
         </div>
 
+        <div id="time-row" class="custom-row" inert>
+          <div class="custom-row-inner">
+            <input id="time-input" type="time" aria-label="Heure de déclenchement" />
+          </div>
+        </div>
+
         <div class="row actions">
-          <button id="start-btn" type="button">Programmer l'extinction</button>
+          <button id="start-btn" type="button" class="primary">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>
+            Programmer
+          </button>
           <button id="cancel-btn" type="button" class="secondary">
             Annuler
           </button>
@@ -57,6 +107,14 @@
           ></span>
           <span id="status-timer" class="status-timer hidden" aria-hidden="true"></span>
         </div>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="autostart-checkbox" class="checkbox-input" />
+          <span class="checkbox-box" aria-hidden="true">
+            <svg class="checkbox-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7" /></svg>
+          </span>
+          Démarrer avec Windows
+        </label>
       </div>
     </main>
   </body>

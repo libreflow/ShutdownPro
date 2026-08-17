@@ -28,21 +28,28 @@ fn run_shutdown_command(_args: &[&str]) -> Result<Output, String> {
     Err("L'extinction programmée n'est pour l'instant supportée que sous Windows.".into())
 }
 
-/// Programme l'extinction propre de l'ordinateur dans `seconds` secondes.
+/// Délai maximal accepté pour une extinction/redémarrage programmé (24 heures).
+const MAX_DELAY_SECONDS: u32 = 24 * 60 * 60;
+
+/// Programme l'extinction ou le redémarrage de l'ordinateur dans `seconds`
+/// secondes. `action` vaut `"shutdown"` ou `"restart"`.
 #[tauri::command]
-fn schedule_shutdown(seconds: u32) -> Result<(), String> {
+fn schedule_shutdown(seconds: u32, action: String) -> Result<(), String> {
     if seconds == 0 {
         return Err("Le délai doit être supérieur à 0 seconde.".into());
     }
+    if seconds > MAX_DELAY_SECONDS {
+        return Err("Le délai ne peut pas dépasser 24 heures.".into());
+    }
+
+    let (flag, message) = match action.as_str() {
+        "shutdown" => ("/s", "Extinction programmée par ShutdownPro"),
+        "restart" => ("/r", "Redémarrage programmé par ShutdownPro"),
+        _ => return Err("Action inconnue.".into()),
+    };
 
     let secs_str = seconds.to_string();
-    let output = run_shutdown_command(&[
-        "/s",
-        "/t",
-        &secs_str,
-        "/c",
-        "Extinction programmée par ShutdownPro",
-    ])?;
+    let output = run_shutdown_command(&[flag, "/t", &secs_str, "/c", message])?;
 
     if output.status.success() {
         Ok(())
@@ -105,6 +112,12 @@ fn show_main_window(app: &AppHandle) {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(
+            tauri_plugin_autostart::Builder::new()
+                .args(["--hidden"])
+                .build(),
+        )
+        .plugin(tauri_plugin_notification::init())
         .invoke_handler(tauri::generate_handler![schedule_shutdown, cancel_shutdown])
         .setup(|app| {
             let show_item =
@@ -159,6 +172,23 @@ pub fn run() {
                     }
                 })
                 .build(app)?;
+
+            #[cfg(target_os = "windows")]
+            if let Some(window) = app.get_webview_window("main") {
+                // Mica (Windows 11) suit nativement le thème clair/sombre du
+                // système ; sur Windows 10, on retombe sur l'effet Acrylic.
+                if window_vibrancy::apply_mica(&window, None).is_err() {
+                    let _ = window_vibrancy::apply_acrylic(&window, Some((18, 18, 18, 125)));
+                }
+            }
+
+            // La fenêtre est créée cachée (voir tauri.conf.json). On ne
+            // l'affiche que si l'application n'a pas été lancée par
+            // l'autostart Windows (flag `--hidden` ajouté par le plugin).
+            let launched_hidden = std::env::args().any(|arg| arg == "--hidden");
+            if !launched_hidden {
+                show_main_window(app.handle());
+            }
 
             Ok(())
         })

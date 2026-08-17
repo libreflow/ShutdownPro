@@ -15,12 +15,16 @@
       {
         "title": "ShutdownPro",
         "width": 420,
-        "height": 480,
-        "resizable": false
+        "height": 640,
+        "minWidth": 400,
+        "minHeight": 480,
+        "resizable": true,
+        "transparent": true,
+        "visible": false
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' asset: https://asset.localhost"
     }
   },
   "bundle": {
