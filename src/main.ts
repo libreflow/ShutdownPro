@@ -25,8 +25,10 @@ let delaySelectListEl: HTMLElement | null;
 let delaySelectOptionEls: HTMLLIElement[] = [];
 let customRowEl: HTMLElement | null;
 let customInputEl: HTMLInputElement | null;
+let customInputErrorEl: HTMLElement | null;
 let timeRowEl: HTMLElement | null;
 let timeInputEl: HTMLInputElement | null;
+let timeInputHintEl: HTMLElement | null;
 let startBtnEl: HTMLButtonElement | null;
 let cancelBtnEl: HTMLButtonElement | null;
 let statusEl: HTMLElement | null;
@@ -119,6 +121,9 @@ function setMode(mode: ScheduleMode) {
 
   timeRowEl?.classList.toggle("visible", isAbsolute);
   timeRowEl?.toggleAttribute("inert", !isAbsolute);
+
+  setCustomInputError("");
+  setTimeInputHint("");
 }
 
 function openDelaySelectList() {
@@ -228,46 +233,82 @@ function restorePersistedSchedule() {
   startCountdown(stored.endsAt, stored.action);
 }
 
+function setCustomInputError(message: string) {
+  customInputEl?.classList.toggle("invalid", Boolean(message));
+  if (customInputErrorEl) customInputErrorEl.textContent = message;
+}
+
+function setTimeInputHint(message: string, isError = false) {
+  timeInputEl?.classList.toggle("invalid", isError);
+  if (timeInputHintEl) {
+    timeInputHintEl.textContent = message;
+    timeInputHintEl.classList.toggle("error", isError);
+  }
+}
+
 function getRelativeDelaySeconds(): number | null {
   if (selectedDelayValue === "custom") {
     const minutes = Number(customInputEl?.value);
     if (!Number.isFinite(minutes) || minutes <= 0) {
-      setStatus("Merci d'indiquer un délai personnalisé valide (en minutes).", true);
+      setCustomInputError("Indiquez un délai valide, en minutes.");
       return null;
     }
     if (minutes > MAX_DELAY_MINUTES) {
-      setStatus(`Le délai personnalisé ne peut pas dépasser ${MAX_DELAY_MINUTES / 60} heures.`, true);
+      setCustomInputError(`Le délai ne peut pas dépasser ${MAX_DELAY_MINUTES / 60} heures.`);
       return null;
     }
+    setCustomInputError("");
     return Math.round(minutes * 60);
   }
 
   return Number(selectedDelayValue);
 }
 
-function getAbsoluteDelaySeconds(): number | null {
-  const value = timeInputEl?.value;
-  if (!value) {
-    setStatus("Merci d'indiquer une heure valide.", true);
-    return null;
-  }
-
+// Résout une heure "HH:MM" en délai (en secondes) jusqu'à la prochaine
+// occurrence de cette heure, en précisant si elle tombe le lendemain (l'heure
+// choisie est déjà passée aujourd'hui).
+function resolveAbsoluteTarget(value: string): { seconds: number; isTomorrow: boolean } | null {
   const [hoursStr, minutesStr] = value.split(":");
   const hours = Number(hoursStr);
   const minutes = Number(minutesStr);
-  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) {
-    setStatus("Merci d'indiquer une heure valide.", true);
-    return null;
-  }
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
 
   const target = new Date();
   target.setSeconds(0, 0);
   target.setHours(hours, minutes);
-  if (target.getTime() <= Date.now()) {
+  const isTomorrow = target.getTime() <= Date.now();
+  if (isTomorrow) {
     target.setDate(target.getDate() + 1);
   }
 
-  return Math.round((target.getTime() - Date.now()) / 1000);
+  return { seconds: Math.round((target.getTime() - Date.now()) / 1000), isTomorrow };
+}
+
+function previewTimeHint() {
+  const value = timeInputEl?.value;
+  if (!value) {
+    setTimeInputHint("");
+    return;
+  }
+  const resolved = resolveAbsoluteTarget(value);
+  setTimeInputHint(resolved?.isTomorrow ? `Demain à ${value}` : "");
+}
+
+function getAbsoluteDelaySeconds(): number | null {
+  const value = timeInputEl?.value;
+  if (!value) {
+    setTimeInputHint("Choisissez une heure.", true);
+    return null;
+  }
+
+  const resolved = resolveAbsoluteTarget(value);
+  if (!resolved) {
+    setTimeInputHint("Heure invalide.", true);
+    return null;
+  }
+
+  setTimeInputHint(resolved.isTomorrow ? `Demain à ${value}` : "");
+  return resolved.seconds;
 }
 
 function getSelectedDelaySeconds(): number | null {
@@ -314,6 +355,7 @@ async function handleAutostartToggle() {
   } catch (err) {
     console.error("Modification du démarrage automatique impossible :", err);
     autostartCheckboxEl.checked = !wantEnabled;
+    setStatus(`Erreur : impossible de modifier le démarrage automatique (${err}).`, true);
   }
 }
 
@@ -321,6 +363,7 @@ async function handleStart() {
   const seconds = getSelectedDelaySeconds();
   if (seconds === null) return;
 
+  if (startBtnEl) startBtnEl.disabled = true;
   try {
     await invoke("schedule_shutdown", { seconds, action: selectedAction });
     const endsAt = persistScheduleEnd(seconds, selectedAction);
@@ -330,6 +373,7 @@ async function handleStart() {
     void notify(`${noun} ${scheduledWord}`, `${noun} ${scheduledWord} dans ${formatDuration(seconds)}.`);
   } catch (err) {
     setStatus(`Erreur : ${err}`, true);
+    if (startBtnEl) startBtnEl.disabled = false;
   }
 }
 
@@ -368,8 +412,10 @@ window.addEventListener("DOMContentLoaded", () => {
   delaySelectOptionEls = Array.from(document.querySelectorAll("#delay-select-list [role='option']"));
   customRowEl = document.querySelector("#custom-row");
   customInputEl = document.querySelector("#custom-input");
+  customInputErrorEl = document.querySelector("#custom-input-error");
   timeRowEl = document.querySelector("#time-row");
   timeInputEl = document.querySelector("#time-input");
+  timeInputHintEl = document.querySelector("#time-input-hint");
   startBtnEl = document.querySelector("#start-btn");
   cancelBtnEl = document.querySelector("#cancel-btn");
   statusEl = document.querySelector("#status");
@@ -420,6 +466,9 @@ window.addEventListener("DOMContentLoaded", () => {
   actionRestartBtnEl?.addEventListener("click", () => setAction("restart"));
   modeRelativeBtnEl?.addEventListener("click", () => setMode("relative"));
   modeAbsoluteBtnEl?.addEventListener("click", () => setMode("absolute"));
+
+  customInputEl?.addEventListener("input", () => setCustomInputError(""));
+  timeInputEl?.addEventListener("input", previewTimeHint);
 
   startBtnEl?.addEventListener("click", handleStart);
   cancelBtnEl?.addEventListener("click", handleCancel);

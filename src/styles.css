@@ -111,15 +111,64 @@ h1 {
 
 .custom-row-inner {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
   min-height: 0;
   overflow: hidden;
 }
 
-.custom-row-inner span {
+.custom-row-fields {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.custom-row-fields span {
   opacity: 0.7;
+}
+
+.field-error,
+.field-hint {
+  width: 100%;
+  margin: 0;
+  font-size: var(--primitive-font-size-xs);
+  text-align: left;
+  text-wrap: pretty;
+}
+
+.field-error:empty,
+.field-hint:empty {
+  display: none;
+}
+
+.field-error {
+  color: var(--color-danger-foreground);
+  font-weight: var(--primitive-font-weight-medium);
+}
+
+.field-hint {
+  opacity: 0.7;
+}
+
+.field-hint.error {
+  color: var(--color-danger-foreground);
+  font-weight: var(--primitive-font-weight-medium);
+  opacity: 1;
+}
+
+input.invalid {
+  border-color: var(--color-danger-foreground);
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  margin: 0;
+  border: none;
+  background: var(--color-glass-border);
 }
 
 .actions {
@@ -387,11 +436,13 @@ button.secondary:hover:not(:disabled) {
   background: var(--status-panel-bg);
   border: 1px solid var(--status-panel-border);
   box-shadow: var(--status-panel-shadow);
-  transition-property: background-color, border-color, box-shadow;
+  transition-property: background-color, border-color, box-shadow, min-height, padding;
   transition-duration: var(--primitive-duration-normal);
 }
 
 .status:has(.status-label:empty) {
+  min-height: 0;
+  padding: 0;
   background: transparent;
   border-color: transparent;
   box-shadow: none;

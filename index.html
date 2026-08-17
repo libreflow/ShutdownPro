@@ -11,7 +11,7 @@
   <body>
     <main class="container">
       <h1>ShutdownPro</h1>
-      <p class="subtitle">Extinction programmée et propre de votre PC</p>
+      <p class="subtitle">Programmez l'extinction ou le redémarrage de votre PC</p>
 
       <div class="card">
         <label id="action-label" class="eyebrow">Action</label>
@@ -29,9 +29,11 @@
         <label id="mode-label" class="eyebrow">Quand</label>
         <div class="row toggle-row" role="group" aria-labelledby="mode-label">
           <button id="mode-relative-btn" type="button" class="toggle active">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 2 L17 2 L7 22 L17 22 Z" /></svg>
             Dans…
           </button>
           <button id="mode-absolute-btn" type="button" class="toggle">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>
             À heure fixe
           </button>
         </div>
@@ -46,7 +48,7 @@
             aria-controls="delay-select-list"
           >
             <span id="delay-select-value">5 minutes</span>
-            <span class="select-chevron" aria-hidden="true">▾</span>
+            <svg class="icon select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
           </button>
           <ul
             id="delay-select-list"
@@ -69,22 +71,34 @@
 
         <div id="custom-row" class="custom-row" inert>
           <div class="custom-row-inner">
-            <input
-              id="custom-input"
-              type="number"
-              min="1"
-              max="1440"
-              step="1"
-              placeholder="Minutes"
-              aria-label="Délai personnalisé, en minutes (24h max)"
-            />
-            <span>minutes</span>
+            <div class="custom-row-fields">
+              <input
+                id="custom-input"
+                type="number"
+                min="1"
+                max="1440"
+                step="1"
+                placeholder="Minutes"
+                aria-label="Délai personnalisé, en minutes (24h max)"
+                aria-describedby="custom-input-error"
+              />
+              <span>minutes</span>
+            </div>
+            <p id="custom-input-error" class="field-error" role="alert"></p>
           </div>
         </div>
 
         <div id="time-row" class="custom-row" inert>
           <div class="custom-row-inner">
-            <input id="time-input" type="time" aria-label="Heure de déclenchement" />
+            <div class="custom-row-fields">
+              <input
+                id="time-input"
+                type="time"
+                aria-label="Heure de déclenchement"
+                aria-describedby="time-input-hint"
+              />
+            </div>
+            <p id="time-input-hint" class="field-hint" aria-live="polite"></p>
           </div>
         </div>
 
@@ -107,6 +121,8 @@
           ></span>
           <span id="status-timer" class="status-timer hidden" aria-hidden="true"></span>
         </div>
+
+        <hr class="divider" />
 
         <label class="checkbox-row">
           <input type="checkbox" id="autostart-checkbox" class="checkbox-input" />
