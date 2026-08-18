@@ -7,12 +7,11 @@
   font-weight: var(--primitive-font-weight-regular);
 
   color: var(--color-foreground);
-  background: transparent;
+  background: var(--color-background);
   min-height: 100vh;
-  /* Sans ceci, les widgets natifs (liste déroulante, case à cocher, input
-     heure) gardent un habillage clair même en thème sombre : leur chrome ne
-     suit que `color-scheme`, pas `prefers-color-scheme`. */
-  color-scheme: light dark;
+  /* App a un seul thème (sombre) : force le chrome des widgets natifs
+     (liste déroulante, case à cocher, input heure) à suivre. */
+  color-scheme: dark;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -23,7 +22,7 @@
 
 body {
   margin: 0;
-  background: transparent;
+  background: var(--color-background);
   overflow-y: auto;
 }
 
@@ -40,14 +39,12 @@ h1 {
   margin-bottom: var(--primitive-spacing-2);
   letter-spacing: -0.01em;
   text-wrap: balance;
-  text-shadow: 0 1px 2px var(--color-glass-shadow);
 }
 
 .subtitle {
   margin-top: 0;
   opacity: 0.85;
   text-wrap: pretty;
-  text-shadow: 0 1px 2px var(--color-glass-shadow);
 }
 
 .card {
@@ -60,8 +57,6 @@ h1 {
   padding: var(--spacing-card-padding);
   border-radius: var(--card-radius);
   background: var(--card-bg);
-  backdrop-filter: var(--card-blur);
-  -webkit-backdrop-filter: var(--card-blur);
   border: 1px solid var(--card-border);
   box-shadow: var(--card-shadow);
   animation: card-in var(--motion-entrance) ease-out;
@@ -72,7 +67,6 @@ h1 {
   font-weight: var(--primitive-font-weight-medium);
   font-size: var(--primitive-font-size-sm);
   opacity: 0.85;
-  text-shadow: 0 1px 2px var(--color-text-shadow);
 }
 
 .eyebrow {
@@ -168,7 +162,7 @@ input.invalid {
   height: 1px;
   margin: 0;
   border: none;
-  background: var(--color-glass-border);
+  background: var(--color-border);
 }
 
 .actions {
@@ -182,8 +176,6 @@ input.invalid {
 button.toggle {
   flex: 1;
   background: var(--toggle-bg);
-  backdrop-filter: var(--toggle-blur);
-  -webkit-backdrop-filter: var(--toggle-blur);
   border: 1px solid var(--toggle-border);
   font-weight: var(--primitive-font-weight-medium);
   box-shadow: var(--toggle-shadow);
@@ -227,7 +219,6 @@ button.primary:active:not(:disabled) {
   font-weight: var(--primitive-font-weight-medium);
   opacity: 0.9;
   cursor: pointer;
-  text-shadow: 0 1px 2px var(--color-text-shadow);
 }
 
 .checkbox-input {
@@ -294,8 +285,6 @@ button {
   font-family: inherit;
   color: var(--color-control-foreground);
   background: var(--control-bg);
-  backdrop-filter: var(--control-blur);
-  -webkit-backdrop-filter: var(--control-blur);
   transition-property: border-color, background-color, box-shadow, transform, color;
   transition-duration: var(--motion-control);
   transition-timing-function: ease;
@@ -350,8 +339,6 @@ select {
   overflow-y: auto;
   border-radius: var(--control-radius);
   background: var(--popover-bg);
-  backdrop-filter: var(--popover-blur);
-  -webkit-backdrop-filter: var(--popover-blur);
   border: 1px solid var(--popover-border);
   box-shadow: var(--popover-shadow);
   transform-origin: top center;
@@ -404,7 +391,7 @@ select:hover:not(:disabled) {
 }
 
 button:active:not(:disabled) {
-  border-color: var(--color-glass-highlight-strong);
+  border-color: var(--color-border-strong);
   background-color: var(--control-bg-active);
   transform: scale(0.96);
 }
@@ -415,13 +402,13 @@ button:disabled {
 }
 
 button.secondary {
-  background: var(--color-glass-surface-subtle);
+  background: var(--color-surface-subtle);
   border: 1px solid var(--control-border);
-  box-shadow: inset 0 1px 1px var(--control-bg-hover);
+  box-shadow: var(--control-shadow);
 }
 
 button.secondary:hover:not(:disabled) {
-  background-color: var(--primitive-alpha-white-15);
+  background-color: var(--color-surface-hover);
 }
 
 .status {
@@ -456,7 +443,6 @@ button.secondary:hover:not(:disabled) {
 .status-label {
   font-weight: var(--primitive-font-weight-semibold);
   text-wrap: pretty;
-  text-shadow: 0 1px 2px var(--color-text-shadow);
   transition: color var(--primitive-duration-normal) ease-out;
 }
 
@@ -467,7 +453,6 @@ button.secondary:hover:not(:disabled) {
   font-variant-numeric: tabular-nums;
   letter-spacing: var(--timer-letter-spacing);
   color: var(--color-accent);
-  text-shadow: 0 1px 2px var(--color-text-shadow);
   transition-property: color;
   transition-duration: var(--primitive-duration-normal);
   transition-timing-function: ease-out;
@@ -501,7 +486,7 @@ button.secondary:hover:not(:disabled) {
     box-shadow: var(--status-panel-shadow-critical);
   }
   50% {
-    box-shadow: 0 0 0 6px var(--color-critical-glow), inset 0 1px 3px var(--color-glass-shadow), inset 0 -1px 1px var(--color-glass-highlight);
+    box-shadow: 0 0 0 6px var(--color-critical-glow);
   }
 }
 
@@ -539,57 +524,5 @@ button.secondary:hover:not(:disabled) {
 
   .status.critical {
     animation: none;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: var(--color-foreground);
-  }
-
-  select,
-  input,
-  button {
-    color: var(--color-control-foreground);
-    background: var(--control-bg);
-  }
-
-  button.toggle {
-    background: var(--toggle-bg);
-  }
-
-  button.toggle.active {
-    border-color: var(--toggle-active-border);
-    background: var(--toggle-active-bg);
-    color: var(--toggle-active-fg);
-  }
-
-  button.secondary {
-    background: var(--primitive-alpha-black-10);
-  }
-
-  .select-list {
-    background: var(--popover-bg);
-    border-color: var(--popover-border);
-  }
-
-  .select-list [role="option"]:hover,
-  .select-list [role="option"]:focus {
-    background-color: var(--popover-option-bg-hover);
-  }
-
-  .select-list [role="option"][aria-selected="true"] {
-    background-color: var(--popover-option-bg-selected);
-    color: var(--popover-option-fg-selected);
-  }
-
-  select:focus-visible,
-  input:focus-visible,
-  button:focus-visible {
-    outline-color: var(--color-accent-ring);
-  }
-
-  .status.error .status-label {
-    color: var(--color-danger-foreground);
   }
 }

@@ -21,7 +21,7 @@
         "maxWidth": 640,
         "maxHeight": 900,
         "resizable": true,
-        "transparent": true,
+        "transparent": false,
         "visible": false
       }
     ],

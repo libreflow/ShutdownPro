@@ -272,15 +272,6 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            #[cfg(target_os = "windows")]
-            if let Some(window) = app.get_webview_window("main") {
-                // Mica (Windows 11) suit nativement le thème clair/sombre du
-                // système ; sur Windows 10, on retombe sur l'effet Acrylic.
-                if window_vibrancy::apply_mica(&window, None).is_err() {
-                    let _ = window_vibrancy::apply_acrylic(&window, Some((18, 18, 18, 125)));
-                }
-            }
-
             // La fenêtre est créée cachée (voir tauri.conf.json). On ne
             // l'affiche que si l'application n'a pas été lancée par
             // l'autostart Windows (flag `--hidden` ajouté par le plugin).

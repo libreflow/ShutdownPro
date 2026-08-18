@@ -5,59 +5,32 @@
 :root {
   --primitive-color-white: #ffffff;
   --primitive-color-black: #000000;
-  --primitive-color-ink-light: #0f0f0f;
-  --primitive-color-ink-dark: #f6f6f6;
-  --primitive-color-indigo-500: #5b54e8;
-  --primitive-color-indigo-800: #322b8c;
-  --primitive-color-indigo-300: #b3a8ff;
-  --primitive-color-indigo-50: #edebff;
-  --primitive-color-amber-500: #f5a524;
-  --primitive-color-amber-800: #8a5a00;
+  --primitive-color-ink: #eaf6f8;
+  --primitive-color-cyan-200: #a5f3fc;
+  --primitive-color-cyan-400: #22d3ee;
+  --primitive-color-cyan-900: #06181c;
   --primitive-color-amber-300: #ffcc66;
-  --primitive-color-red-300: #ffd2d2;
+  --primitive-color-amber-500: #f5a524;
   --primitive-color-red-400: #ff9494;
   --primitive-color-red-500: #ff5a52;
-  --primitive-color-red-700: #b91c1c;
 
-  --primitive-alpha-white-06: rgba(255, 255, 255, 0.06);
-  --primitive-alpha-white-08: rgba(255, 255, 255, 0.08);
-  --primitive-alpha-white-10: rgba(255, 255, 255, 0.1);
-  --primitive-alpha-white-14: rgba(255, 255, 255, 0.14);
-  --primitive-alpha-white-15: rgba(255, 255, 255, 0.15);
-  --primitive-alpha-white-18: rgba(255, 255, 255, 0.18);
-  --primitive-alpha-white-20: rgba(255, 255, 255, 0.2);
-  --primitive-alpha-white-25: rgba(255, 255, 255, 0.25);
-  --primitive-alpha-white-30: rgba(255, 255, 255, 0.3);
-  --primitive-alpha-white-35: rgba(255, 255, 255, 0.35);
-  --primitive-alpha-white-40: rgba(255, 255, 255, 0.4);
-  --primitive-alpha-white-75: rgba(255, 255, 255, 0.75);
-  --primitive-alpha-black-08: rgba(0, 0, 0, 0.08);
-  --primitive-alpha-black-10: rgba(0, 0, 0, 0.1);
-  --primitive-alpha-black-15: rgba(0, 0, 0, 0.15);
-  --primitive-alpha-black-18: rgba(0, 0, 0, 0.18);
-  --primitive-alpha-indigo-500-14: rgba(91, 84, 232, 0.14);
-  --primitive-alpha-indigo-500-28: rgba(91, 84, 232, 0.28);
-  --primitive-alpha-indigo-500-35: rgba(91, 84, 232, 0.35);
-  --primitive-alpha-indigo-500-60: rgba(91, 84, 232, 0.6);
-  --primitive-alpha-indigo-300-18: rgba(179, 168, 255, 0.18);
-  --primitive-alpha-indigo-300-22: rgba(179, 168, 255, 0.22);
-  --primitive-alpha-indigo-300-28: rgba(179, 168, 255, 0.28);
-  --primitive-alpha-indigo-300-35: rgba(179, 168, 255, 0.35);
-  --primitive-alpha-indigo-300-60: rgba(179, 168, 255, 0.6);
-  --primitive-alpha-amber-500-20: rgba(245, 165, 36, 0.2);
+  --primitive-alpha-cyan-400-18: rgba(34, 211, 238, 0.18);
+  --primitive-alpha-cyan-400-22: rgba(34, 211, 238, 0.22);
+  --primitive-alpha-cyan-400-35: rgba(34, 211, 238, 0.35);
+  --primitive-alpha-cyan-400-60: rgba(34, 211, 238, 0.6);
   --primitive-alpha-amber-500-35: rgba(245, 165, 36, 0.35);
-  --primitive-alpha-red-500-20: rgba(255, 90, 82, 0.2);
   --primitive-alpha-red-500-35: rgba(255, 90, 82, 0.35);
-  --primitive-alpha-black-panel: rgba(30, 30, 35, 0.85);
-  --primitive-alpha-white-45: rgba(255, 255, 255, 0.45);
-  --primitive-alpha-white-50: rgba(255, 255, 255, 0.5);
-  --primitive-alpha-white-55: rgba(255, 255, 255, 0.55);
-  --primitive-alpha-white-65: rgba(255, 255, 255, 0.65);
-  --primitive-alpha-white-72: rgba(255, 255, 255, 0.72);
-  --primitive-alpha-panel-40: rgba(30, 30, 35, 0.4);
-  --primitive-alpha-panel-50: rgba(30, 30, 35, 0.5);
-  --primitive-alpha-panel-60: rgba(30, 30, 35, 0.6);
-  --primitive-alpha-panel-68: rgba(30, 30, 35, 0.68);
+
+  --primitive-alpha-slate-40: rgba(16, 24, 28, 0.42);
+  --primitive-alpha-slate-50: rgba(16, 24, 28, 0.55);
+  --primitive-alpha-slate-60: rgba(16, 24, 28, 0.68);
+  --primitive-alpha-slate-68: rgba(16, 24, 28, 0.78);
+  --primitive-alpha-slate-85: #12171b;
+
+  --primitive-alpha-border-10: rgba(148, 197, 205, 0.1);
+  --primitive-alpha-border-16: rgba(148, 197, 205, 0.16);
+  --primitive-alpha-border-24: rgba(148, 197, 205, 0.24);
+  --primitive-alpha-highlight-08: rgba(148, 197, 205, 0.08);
 
   --primitive-spacing-1: 0.15rem;
   --primitive-spacing-2: 0.2rem;
@@ -79,14 +52,9 @@
   --primitive-font-weight-semibold: 600;
   --primitive-font-weight-bold: 700;
 
-  --primitive-radius-control: 16px;
-  --primitive-radius-card: 20px;
-  --primitive-radius-option: 10px;
-
-  --primitive-blur-sm: blur(8px) saturate(150%);
-  --primitive-blur-md: blur(10px) saturate(160%);
-  --primitive-blur-lg: blur(12px) saturate(180%);
-  --primitive-blur-xl: blur(16px) saturate(180%);
+  --primitive-radius-control: 10px;
+  --primitive-radius-card: 14px;
+  --primitive-radius-option: 6px;
 
   --primitive-duration-fast: 150ms;
   --primitive-duration-normal: 200ms;
@@ -98,38 +66,35 @@
   --primitive-letter-spacing-tight: -0.01em;
 }
 
-/* === SEMANTIC (light — default) === */
+/* === SEMANTIC (single always-dark theme) === */
 :root {
-  --color-foreground: var(--primitive-color-ink-light);
-  --color-accent: var(--primitive-color-indigo-500);
-  --color-accent-foreground: var(--primitive-color-indigo-800);
-  --color-accent-ring: var(--primitive-color-indigo-500);
-  --color-accent-border: var(--primitive-alpha-indigo-500-60);
-  --color-accent-surface: var(--primitive-alpha-indigo-500-28);
-  --color-accent-surface-hover: var(--primitive-alpha-indigo-500-14);
-  --color-accent-glow: var(--primitive-alpha-indigo-500-35);
-  --color-brand: var(--primitive-color-indigo-500);
-  --color-brand-foreground: var(--primitive-color-white);
-  --color-danger-foreground: var(--primitive-color-red-700);
-  --color-warn-foreground: var(--primitive-color-amber-800);
+  --color-background: #0a0b0d;
+  --color-foreground: var(--primitive-color-ink);
+  --color-accent: var(--primitive-color-cyan-400);
+  --color-accent-foreground: var(--primitive-color-cyan-200);
+  --color-accent-ring: var(--primitive-color-cyan-400);
+  --color-accent-border: var(--primitive-alpha-cyan-400-60);
+  --color-accent-surface: var(--primitive-alpha-cyan-400-22);
+  --color-accent-surface-hover: var(--primitive-alpha-cyan-400-18);
+  --color-accent-glow: var(--primitive-alpha-cyan-400-35);
+  --color-brand: var(--primitive-color-cyan-400);
+  --color-brand-foreground: var(--primitive-color-cyan-900);
+  --color-danger-foreground: var(--primitive-color-red-400);
+  --color-warn-foreground: var(--primitive-color-amber-300);
   --color-warn-glow: var(--primitive-alpha-amber-500-35);
   --color-critical-glow: var(--primitive-alpha-red-500-35);
-  --color-control-foreground: #16171c;
+  --color-control-foreground: var(--primitive-color-white);
 
-  --color-glass-surface: var(--primitive-alpha-white-55);
-  --color-glass-surface-subtle: var(--primitive-alpha-white-45);
-  --color-glass-surface-hover: var(--primitive-alpha-white-65);
-  --color-glass-surface-active: var(--primitive-alpha-white-72);
-  --color-glass-control-surface: var(--primitive-alpha-white-50);
-  --color-glass-popover-surface: var(--primitive-alpha-white-75);
-  --color-glass-border: var(--primitive-alpha-white-20);
-  --color-glass-border-strong: var(--primitive-alpha-white-35);
-  --color-glass-popover-border: var(--primitive-alpha-white-40);
-  --color-glass-highlight: var(--primitive-alpha-white-30);
-  --color-glass-highlight-strong: var(--primitive-alpha-white-40);
-  --color-glass-shadow: var(--primitive-alpha-black-10);
-  --color-glass-shadow-strong: var(--primitive-alpha-black-18);
-  --color-text-shadow: var(--primitive-alpha-black-08);
+  --color-surface: var(--primitive-alpha-slate-50);
+  --color-surface-subtle: var(--primitive-alpha-slate-40);
+  --color-surface-hover: var(--primitive-alpha-slate-60);
+  --color-surface-active: var(--primitive-alpha-slate-68);
+  --color-control-surface: var(--primitive-alpha-slate-50);
+  --color-popover-surface: var(--primitive-alpha-slate-85);
+  --color-border: var(--primitive-alpha-border-16);
+  --color-border-strong: var(--primitive-alpha-border-24);
+  --color-popover-border: var(--primitive-alpha-border-24);
+  --color-highlight: var(--primitive-alpha-highlight-08);
 
   --spacing-row-gap: var(--primitive-spacing-4);
   --spacing-card-gap: var(--primitive-spacing-6);
@@ -141,29 +106,26 @@
 
 /* === COMPONENT === */
 :root {
-  --card-bg: var(--color-glass-surface);
-  --card-border: var(--color-glass-border);
-  --card-blur: var(--primitive-blur-lg);
+  --card-bg: var(--color-surface);
+  --card-border: var(--color-border);
   --card-radius: var(--primitive-radius-card);
-  --card-shadow: 0 8px 32px var(--color-glass-shadow), inset 0 1px 1px var(--color-glass-highlight);
+  --card-shadow: inset 0 1px 0 var(--color-highlight);
 
-  --control-bg: var(--color-glass-control-surface);
-  --control-bg-hover: var(--color-glass-surface-hover);
-  --control-bg-active: var(--color-glass-surface-active);
-  --control-border: var(--color-glass-border);
-  --control-border-hover: var(--color-glass-border-strong);
-  --control-blur: var(--primitive-blur-md);
+  --control-bg: var(--color-control-surface);
+  --control-bg-hover: var(--color-surface-hover);
+  --control-bg-active: var(--color-surface-active);
+  --control-border: var(--color-border);
+  --control-border-hover: var(--color-border-strong);
   --control-radius: var(--primitive-radius-control);
-  --control-shadow: 0 4px 16px var(--color-glass-shadow), inset 0 1px 1px var(--color-glass-highlight);
+  --control-shadow: inset 0 1px 0 var(--color-highlight);
 
-  --toggle-bg: var(--color-glass-surface-subtle);
-  --toggle-blur: var(--primitive-blur-sm);
-  --toggle-border: var(--color-glass-border);
-  --toggle-shadow: inset 0 1px 1px var(--color-glass-surface-hover);
+  --toggle-bg: var(--color-surface-subtle);
+  --toggle-border: var(--color-border);
+  --toggle-shadow: inset 0 1px 0 var(--color-highlight);
   --toggle-active-bg: var(--color-accent-surface);
   --toggle-active-border: var(--color-accent-border);
   --toggle-active-fg: var(--color-accent-foreground);
-  --toggle-active-shadow: 0 0 0 3px var(--color-accent-glow), inset 0 1px 1px var(--color-glass-highlight);
+  --toggle-active-shadow: 0 0 0 1px var(--color-accent-border), 0 0 12px var(--color-accent-glow);
 
   --label-font-size: var(--primitive-font-size-xs);
   --label-letter-spacing: var(--primitive-letter-spacing-wide);
@@ -171,7 +133,7 @@
 
   --button-primary-bg: var(--color-brand);
   --button-primary-fg: var(--color-brand-foreground);
-  --button-primary-shadow: 0 4px 20px var(--color-accent-glow), inset 0 1px 1px var(--color-glass-highlight-strong);
+  --button-primary-shadow: 0 0 16px var(--color-accent-glow);
 
   --checkbox-size: 20px;
   --checkbox-bg: var(--control-bg);
@@ -180,48 +142,22 @@
   --checkbox-checked-border: var(--toggle-active-border);
   --checkbox-check-color: var(--toggle-active-fg);
 
-  --status-panel-bg: var(--color-glass-surface-subtle);
-  --status-panel-border: var(--color-glass-border);
+  --status-panel-bg: var(--color-surface-subtle);
+  --status-panel-border: var(--color-border);
   --status-panel-radius: var(--control-radius);
-  --status-panel-shadow: inset 0 1px 3px var(--color-glass-shadow), inset 0 -1px 1px var(--color-glass-highlight);
-  --status-panel-shadow-warn: 0 0 0 3px var(--color-warn-glow), inset 0 1px 3px var(--color-glass-shadow), inset 0 -1px 1px var(--color-glass-highlight);
-  --status-panel-shadow-critical: 0 0 0 3px var(--color-critical-glow), inset 0 1px 3px var(--color-glass-shadow), inset 0 -1px 1px var(--color-glass-highlight);
+  --status-panel-shadow: inset 0 1px 0 var(--color-highlight);
+  --status-panel-shadow-warn: 0 0 0 1px var(--color-warn-glow), 0 0 14px var(--color-warn-glow);
+  --status-panel-shadow-critical: 0 0 0 1px var(--color-critical-glow), 0 0 14px var(--color-critical-glow);
 
   --timer-font-family: var(--primitive-font-family-mono);
   --timer-font-size: var(--primitive-font-size-timer);
   --timer-letter-spacing: var(--primitive-letter-spacing-tight);
 
-  --popover-bg: var(--color-glass-popover-surface);
-  --popover-border: var(--color-glass-popover-border);
-  --popover-blur: var(--primitive-blur-xl);
-  --popover-shadow: 0 12px 32px var(--color-glass-shadow-strong), inset 0 1px 1px var(--color-glass-highlight-strong);
+  --popover-bg: var(--color-popover-surface);
+  --popover-border: var(--color-popover-border);
+  --popover-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
   --popover-option-radius: var(--primitive-radius-option);
   --popover-option-bg-hover: var(--color-accent-surface-hover);
   --popover-option-bg-selected: var(--color-accent-surface);
   --popover-option-fg-selected: var(--color-accent-foreground);
-}
-
-/* === DARK MODE (OS-driven — this app has no manual theme toggle) === */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-foreground: var(--primitive-color-ink-dark);
-    --color-accent: var(--primitive-color-indigo-300);
-    --color-accent-foreground: var(--primitive-color-indigo-50);
-    --color-accent-ring: var(--primitive-color-indigo-300);
-    --color-accent-border: var(--primitive-alpha-indigo-300-60);
-    --color-accent-surface: var(--primitive-alpha-indigo-300-22);
-    --color-accent-surface-hover: var(--primitive-alpha-indigo-300-18);
-    --color-accent-glow: var(--primitive-alpha-indigo-300-35);
-    --color-danger-foreground: var(--primitive-color-red-400);
-    --color-warn-foreground: var(--primitive-color-amber-300);
-    --color-control-foreground: var(--primitive-color-white);
-
-    --color-glass-surface: var(--primitive-alpha-panel-50);
-    --color-glass-surface-subtle: var(--primitive-alpha-panel-40);
-    --color-glass-surface-hover: var(--primitive-alpha-panel-60);
-    --color-glass-surface-active: var(--primitive-alpha-panel-68);
-    --color-glass-control-surface: var(--primitive-alpha-panel-50);
-    --color-glass-popover-surface: var(--primitive-alpha-black-panel);
-    --color-glass-popover-border: var(--primitive-alpha-white-15);
-  }
 }
