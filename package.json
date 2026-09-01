@@ -8,17 +8,21 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "test": "vitest run",
     "tauri": "tauri"
   },
+  "license": "MIT",
   "dependencies": {
     "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2",
     "@tauri-apps/plugin-autostart": "^2",
-    "@tauri-apps/plugin-notification": "^2"
+    "@tauri-apps/plugin-notification": "^2.4.0",
+    "@tauri-apps/plugin-opener": "^2.5.5"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
-    "vite": "^8.2.1",
-    "typescript": "~5.6.2"
+    "jsdom": "^29.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
   }
 }

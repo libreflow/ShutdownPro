@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+# Uniquement Windows : c'est la seule cible réelle de l'app (voir README —
+# `shutdown` n'est appelé que sous cfg(target_os = "windows")).
+jobs:
+  frontend:
+    name: Frontend (tsc, vitest, build)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  backend:
+    name: Backend (fmt, clippy, cargo test)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Format check
+        run: cargo fmt --check
+        working-directory: src-tauri
+
+      - name: Clippy (deny warnings)
+        run: cargo clippy --release --all-targets -- -D warnings
+        working-directory: src-tauri
+
+      - name: Unit tests
+        run: cargo test --lib
+        working-directory: src-tauri
+
+  audit:
+    name: Dependency audit (npm + cargo-audit)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm audit
+        run: npm audit --audit-level=moderate
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+
+      - name: cargo audit
+        # Lit src-tauri/.cargo/audit.toml pour les advisories GTK3/Linux
+        # ignorées avec justification (code mort sur Windows).
+        run: cargo audit
+        working-directory: src-tauri

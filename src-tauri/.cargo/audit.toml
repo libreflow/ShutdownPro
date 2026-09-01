@@ -1,0 +1,34 @@
+# Configuration cargo-audit — voir https://docs.rs/cargo-audit/latest/cargo_audit/config
+#
+# Ce projet cible EXCLUSIVEMENT Windows (voir Cargo.toml : la commande
+# `shutdown` n'est appelée que sous `cfg(target_os = "windows")`). Le crate
+# `tray-icon` (dépendance de `tauri`) tire cependant les bindings GTK3 en
+# dépendance transitive pour son support Linux, même quand ce code n'est
+# jamais compilé/exécuté sur Windows. Ces advisories sont donc du code mort
+# ici : ignorées avec justification, pas silencieusement supprimées.
+#
+# À revoir si le projet ajoute un jour une cible Linux.
+#
+# Liste vérifiée avec `cargo audit` le 2026-09-01 (17 advisories, toutes
+# GTK3/Linux-only ou transitives de la chaîne GTK3).
+
+[advisories]
+ignore = [
+    "RUSTSEC-2024-0413", # atk — gtk-rs GTK3 bindings unmaintained (Linux-only, code mort sur Windows)
+    "RUSTSEC-2024-0416", # atk-sys — idem
+    "RUSTSEC-2024-0412", # gdk — idem
+    "RUSTSEC-2024-0418", # gdk-sys — idem
+    "RUSTSEC-2024-0411", # gdkwayland-sys — idem
+    "RUSTSEC-2024-0417", # gdkx11 — idem
+    "RUSTSEC-2024-0414", # gdkx11-sys — idem
+    "RUSTSEC-2024-0415", # gtk — idem
+    "RUSTSEC-2024-0420", # gtk-sys — idem
+    "RUSTSEC-2024-0419", # gtk3-macros — idem
+    "RUSTSEC-2024-0370", # proc-macro-error — unmaintained, tiré transitivement par la chaîne GTK3
+    "RUSTSEC-2025-0081", # unic-char-property — unmaintained, idem
+    "RUSTSEC-2025-0075", # unic-char-range — idem
+    "RUSTSEC-2025-0080", # unic-common — idem
+    "RUSTSEC-2025-0100", # unic-ucd-ident — idem
+    "RUSTSEC-2025-0098", # unic-ucd-version — idem
+    "RUSTSEC-2024-0429", # glib — unsoundness dans un Iterator GTK3, Linux-only ici
+]

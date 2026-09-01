@@ -31,10 +31,13 @@ fn run_shutdown_command(_args: &[&str]) -> Result<Output, String> {
 /// Délai maximal accepté pour une extinction/redémarrage programmé (24 heures).
 const MAX_DELAY_SECONDS: u32 = 24 * 60 * 60;
 
-/// Programme l'extinction ou le redémarrage de l'ordinateur dans `seconds`
-/// secondes. `action` vaut `"shutdown"` ou `"restart"`.
-#[tauri::command]
-fn schedule_shutdown(seconds: u32, action: String) -> Result<(), String> {
+/// Valide `seconds`/`action` et renvoie le flag `shutdown` et le message
+/// associés. Logique pure, séparée de `schedule_shutdown` pour être testable
+/// sans jamais invoquer la vraie commande `shutdown` système.
+fn validate_schedule_args(
+    seconds: u32,
+    action: &str,
+) -> Result<(&'static str, &'static str), String> {
     if seconds == 0 {
         return Err("Le délai doit être supérieur à 0 seconde.".into());
     }
@@ -42,11 +45,18 @@ fn schedule_shutdown(seconds: u32, action: String) -> Result<(), String> {
         return Err("Le délai ne peut pas dépasser 24 heures.".into());
     }
 
-    let (flag, message) = match action.as_str() {
-        "shutdown" => ("/s", "Extinction programmée par ShutdownPro"),
-        "restart" => ("/r", "Redémarrage programmé par ShutdownPro"),
-        _ => return Err("Action inconnue.".into()),
-    };
+    match action {
+        "shutdown" => Ok(("/s", "Extinction programmée par ShutdownPro")),
+        "restart" => Ok(("/r", "Redémarrage programmé par ShutdownPro")),
+        _ => Err("Action inconnue.".into()),
+    }
+}
+
+/// Programme l'extinction ou le redémarrage de l'ordinateur dans `seconds`
+/// secondes. `action` vaut `"shutdown"` ou `"restart"`.
+#[tauri::command]
+fn schedule_shutdown(seconds: u32, action: String) -> Result<(), String> {
+    let (flag, message) = validate_schedule_args(seconds, &action)?;
 
     let secs_str = seconds.to_string();
     let output = run_shutdown_command(&[flag, "/t", &secs_str, "/c", message])?;
@@ -97,11 +107,7 @@ fn cancel_shutdown() -> Result<(), String> {
 /// Éteint ou redémarre l'ordinateur sans délai. `action` vaut `"shutdown"`
 /// ou `"restart"`.
 fn do_immediate_action(action: &str) -> Result<(), String> {
-    let (flag, message) = match action {
-        "shutdown" => ("/s", "Extinction immédiate par ShutdownPro"),
-        "restart" => ("/r", "Redémarrage immédiat par ShutdownPro"),
-        _ => return Err("Action inconnue.".into()),
-    };
+    let (flag, message) = immediate_action_args(action)?;
 
     let output = run_shutdown_command(&[flag, "/t", "0", "/c", message])?;
 
@@ -109,6 +115,17 @@ fn do_immediate_action(action: &str) -> Result<(), String> {
         Ok(())
     } else {
         Err(command_error(&output))
+    }
+}
+
+/// Résout le flag `shutdown` et le message pour une action immédiate.
+/// Logique pure, séparée de `do_immediate_action` pour être testable sans
+/// jamais invoquer la vraie commande `shutdown` système.
+fn immediate_action_args(action: &str) -> Result<(&'static str, &'static str), String> {
+    match action {
+        "shutdown" => Ok(("/s", "Extinction immédiate par ShutdownPro")),
+        "restart" => Ok(("/r", "Redémarrage immédiat par ShutdownPro")),
+        _ => Err("Action inconnue.".into()),
     }
 }
 
@@ -144,14 +161,21 @@ fn handle_tray_schedule(app: &AppHandle, action: &str, spec: &str) {
         (do_immediate_action(action), None)
     } else {
         match spec.parse::<u32>() {
-            Ok(seconds) => (schedule_shutdown(seconds, action.to_string()), Some(seconds)),
+            Ok(seconds) => (
+                schedule_shutdown(seconds, action.to_string()),
+                Some(seconds),
+            ),
             Err(_) => (Err("Délai invalide.".to_string()), None),
         }
     };
 
     // Pour une action programmée, on affiche la fenêtre pour que le
-    // countdown soit visible ; une action immédiate n'a pas cet intérêt.
-    if seconds.is_some() {
+    // countdown soit visible. Une action immédiate réussie n'a pas cet
+    // intérêt (le PC s'éteint de toute façon), mais un ÉCHEC doit toujours
+    // afficher la fenêtre : sinon l'utilisateur croit avoir déclenché
+    // l'extinction alors que rien ne s'est passé, sans aucun signal visible.
+    let failed = result.is_err();
+    if seconds.is_some() || failed {
         show_main_window(app);
     }
 
@@ -185,29 +209,53 @@ pub fn run() {
                 MenuItem::with_id(app, "show", "Afficher ShutdownPro", true, None::<&str>)?;
             let cancel_item =
                 MenuItem::with_id(app, "cancel", "Annuler l'extinction", true, None::<&str>)?;
-            let quit_item = MenuItem::with_id(app, "quit", "Quitter", true, None::<&str>)?;
+            let quit_item = MenuItem::with_id(
+                app,
+                "quit",
+                "Quitter (n'annule pas une extinction programmée)",
+                true,
+                None::<&str>,
+            )?;
             let separator = PredefinedMenuItem::separator(app)?;
 
-            let shutdown_now_item = MenuItem::with_id(app, "shutdown_now", "Maintenant", true, None::<&str>)?;
-            let shutdown_15_item = MenuItem::with_id(app, "shutdown_900", "Dans 15 minutes", true, None::<&str>)?;
-            let shutdown_30_item = MenuItem::with_id(app, "shutdown_1800", "Dans 30 minutes", true, None::<&str>)?;
-            let shutdown_60_item = MenuItem::with_id(app, "shutdown_3600", "Dans 1 heure", true, None::<&str>)?;
+            let shutdown_now_item =
+                MenuItem::with_id(app, "shutdown_now", "Maintenant", true, None::<&str>)?;
+            let shutdown_15_item =
+                MenuItem::with_id(app, "shutdown_900", "Dans 15 minutes", true, None::<&str>)?;
+            let shutdown_30_item =
+                MenuItem::with_id(app, "shutdown_1800", "Dans 30 minutes", true, None::<&str>)?;
+            let shutdown_60_item =
+                MenuItem::with_id(app, "shutdown_3600", "Dans 1 heure", true, None::<&str>)?;
             let shutdown_submenu = Submenu::with_items(
                 app,
                 "Éteindre",
                 true,
-                &[&shutdown_now_item, &shutdown_15_item, &shutdown_30_item, &shutdown_60_item],
+                &[
+                    &shutdown_now_item,
+                    &shutdown_15_item,
+                    &shutdown_30_item,
+                    &shutdown_60_item,
+                ],
             )?;
 
-            let restart_now_item = MenuItem::with_id(app, "restart_now", "Maintenant", true, None::<&str>)?;
-            let restart_15_item = MenuItem::with_id(app, "restart_900", "Dans 15 minutes", true, None::<&str>)?;
-            let restart_30_item = MenuItem::with_id(app, "restart_1800", "Dans 30 minutes", true, None::<&str>)?;
-            let restart_60_item = MenuItem::with_id(app, "restart_3600", "Dans 1 heure", true, None::<&str>)?;
+            let restart_now_item =
+                MenuItem::with_id(app, "restart_now", "Maintenant", true, None::<&str>)?;
+            let restart_15_item =
+                MenuItem::with_id(app, "restart_900", "Dans 15 minutes", true, None::<&str>)?;
+            let restart_30_item =
+                MenuItem::with_id(app, "restart_1800", "Dans 30 minutes", true, None::<&str>)?;
+            let restart_60_item =
+                MenuItem::with_id(app, "restart_3600", "Dans 1 heure", true, None::<&str>)?;
             let restart_submenu = Submenu::with_items(
                 app,
                 "Redémarrer",
                 true,
-                &[&restart_now_item, &restart_15_item, &restart_30_item, &restart_60_item],
+                &[
+                    &restart_now_item,
+                    &restart_15_item,
+                    &restart_30_item,
+                    &restart_60_item,
+                ],
             )?;
 
             let menu = Menu::with_items(
@@ -290,4 +338,113 @@ pub fn run() {
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::os::windows::process::ExitStatusExt;
+    use std::process::ExitStatus;
+
+    fn output_with_code(code: i32) -> Output {
+        Output {
+            status: ExitStatus::from_raw(code as u32),
+            stdout: Vec::new(),
+            stderr: Vec::new(),
+        }
+    }
+
+    fn output_with_stderr(code: i32, stderr: &str) -> Output {
+        Output {
+            status: ExitStatus::from_raw(code as u32),
+            stdout: Vec::new(),
+            stderr: stderr.as_bytes().to_vec(),
+        }
+    }
+
+    // --- validate_schedule_args : jamais d'appel à la vraie commande shutdown ---
+
+    #[test]
+    fn rejects_zero_seconds() {
+        let err = validate_schedule_args(0, "shutdown").unwrap_err();
+        assert!(err.contains("supérieur à 0"));
+    }
+
+    #[test]
+    fn rejects_delay_over_24h() {
+        let err = validate_schedule_args(MAX_DELAY_SECONDS + 1, "shutdown").unwrap_err();
+        assert!(err.contains("24 heures"));
+    }
+
+    #[test]
+    fn accepts_exactly_24h() {
+        assert!(validate_schedule_args(MAX_DELAY_SECONDS, "shutdown").is_ok());
+    }
+
+    #[test]
+    fn accepts_minimum_one_second() {
+        assert!(validate_schedule_args(1, "restart").is_ok());
+    }
+
+    #[test]
+    fn rejects_unknown_action() {
+        let err = validate_schedule_args(60, "hibernate").unwrap_err();
+        assert_eq!(err, "Action inconnue.");
+    }
+
+    #[test]
+    fn shutdown_action_maps_to_s_flag() {
+        let (flag, _) = validate_schedule_args(60, "shutdown").unwrap();
+        assert_eq!(flag, "/s");
+    }
+
+    #[test]
+    fn restart_action_maps_to_r_flag() {
+        let (flag, _) = validate_schedule_args(60, "restart").unwrap();
+        assert_eq!(flag, "/r");
+    }
+
+    // --- immediate_action_args ---
+
+    #[test]
+    fn immediate_rejects_unknown_action() {
+        assert!(immediate_action_args("sleep").is_err());
+    }
+
+    #[test]
+    fn immediate_shutdown_maps_to_s_flag() {
+        let (flag, _) = immediate_action_args("shutdown").unwrap();
+        assert_eq!(flag, "/s");
+    }
+
+    #[test]
+    fn immediate_restart_maps_to_r_flag() {
+        let (flag, _) = immediate_action_args("restart").unwrap();
+        assert_eq!(flag, "/r");
+    }
+
+    // --- command_error ---
+
+    #[test]
+    fn command_error_prefers_stderr() {
+        let output = output_with_stderr(1, "  accès refusé  \n");
+        assert_eq!(command_error(&output), "accès refusé");
+    }
+
+    #[test]
+    fn command_error_falls_back_to_exit_code() {
+        let output = output_with_code(5);
+        assert_eq!(
+            command_error(&output),
+            "La commande shutdown a échoué (code de sortie : 5)."
+        );
+    }
+
+    #[test]
+    fn command_error_falls_back_to_generic_message_on_empty_stderr() {
+        let output = output_with_stderr(0, "");
+        // status.success() ne fait pas partie de command_error : on vérifie
+        // juste la branche "code présent, stderr vide".
+        assert!(command_error(&output).contains("code de sortie"));
+    }
 }
