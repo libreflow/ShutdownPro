@@ -1,8 +1,8 @@
 [package]
 name = "tauri-app"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "ShutdownPro — planificateur d'extinction et de redémarrage Windows, avec icône système, démarrage automatique et notifications."
+authors = ["Robin Di Berardini"]
 license = "MIT"
 edition = "2021"
 
@@ -31,4 +31,3 @@ lto = true
 codegen-units = 1
 strip = true
 panic = "abort"
-

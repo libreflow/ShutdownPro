@@ -5,6 +5,22 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
 ## [Unreleased]
 
+### Ajouté
+- Job CI `release` : au push d'un tag `v*`, build de l'installeur NSIS
+  (`npm run tauri build`), upload en artifact et création automatique d'une
+  GitHub Release avec notes générées — après validation des jobs
+  frontend/backend/audit.
+
+### Modifié
+- La commande `shutdown` est désormais invoquée via son chemin absolu
+  (`%SystemRoot%\System32\shutdown.exe`) plutôt que résolue via le PATH :
+  un PATH détourné ne peut plus substituer un autre binaire à l'outil système.
+- Les messages stderr bruts de l'outil `shutdown` (en anglais système) sont
+  désormais encadrés d'un libellé français (« La commande shutdown a
+  échoué : … ») pour rester cohérents avec l'interface.
+- Métadonnées `Cargo.toml` : description et auteur réels remplacent le
+  boilerplate (« A Tauri App » / « you »).
+
 ### Corrigé
 - Une action immédiate ("Maintenant") déclenchée depuis le menu du system
   tray qui échouait ne montrait ni la fenêtre principale ni de notification
@@ -15,7 +31,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
   déclarées en `devDependencies` alors que ce sont des dépendances runtime
   (importées et exécutées dans l'app buildée) — déplacées vers `dependencies`.
 
-### Ajouté
+### Ajouté (précédemment)
 - Tests unitaires Rust (`cargo test`) sur la validation des délais/actions et
   la construction des messages d'erreur — 13 tests, aucun n'invoque jamais la
   vraie commande `shutdown` système.
@@ -29,7 +45,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
   pour son support Linux — code mort sur la cible Windows réelle du projet).
 - `LICENSE` (MIT).
 
-### Modifié
+### Modifié (précédemment)
 - Refactor de `src/main.ts` : les ~20 variables `let` de références DOM et
   les 6 variables d'état mutable sont regroupées dans deux objets (`els`,
   `state`) plutôt qu'éparpillées au niveau module — comportement inchangé.

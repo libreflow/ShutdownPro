@@ -16,11 +16,18 @@ const ERROR_NO_SHUTDOWN_IN_PROGRESS: i32 = 1116;
 fn run_shutdown_command(args: &[&str]) -> Result<Output, String> {
     use std::os::windows::process::CommandExt;
 
-    Command::new("shutdown")
-        .args(args)
-        .creation_flags(CREATE_NO_WINDOW)
+    // Chemin absolu vers l'outil système : passer par une résolution PATH
+    // permettrait à un PATH détourné d'exécuter un autre binaire à la place
+    // de l'outil d'extinction de Windows.
+    let system_root =
+        std::env::var("SystemRoot").unwrap_or_else(|_| r"C:\Windows".to_string());
+    let mut command = Command::new(format!(r"{system_root}\\System32\\shutdown.exe"));
+
+    command.args(args).creation_flags(CREATE_NO_WINDOW);
+
+    command
         .output()
-        .map_err(|e| format!("Impossible de lancer la commande shutdown: {e}"))
+        .map_err(|e| format!("Impossible de lancer la commande shutdown : {e}"))
 }
 
 #[cfg(not(target_os = "windows"))]
@@ -73,7 +80,10 @@ fn schedule_shutdown(seconds: u32, action: String) -> Result<(), String> {
 fn command_error(output: &Output) -> String {
     let stderr = String::from_utf8_lossy(&output.stderr).trim().to_string();
     if !stderr.is_empty() {
-        return stderr;
+        // stderr provient de l'outil système (généralement en anglais) :
+        // on l'encadre d'un libellé français pour rester cohérent avec
+        // le reste de l'interface.
+        return format!("La commande shutdown a échoué : {stderr}");
     }
 
     match output.status.code() {
@@ -119,7 +129,7 @@ fn do_immediate_action(action: &str) -> Result<(), String> {
 }
 
 /// Résout le flag `shutdown` et le message pour une action immédiate.
-/// Logique pure, séparée de `do_immediate_action` pour être testable sans
+/// Logique pure, séparée de `do_immediate_action` pour être testée sans
 /// jamais invoquer la vraie commande `shutdown` système.
 fn immediate_action_args(action: &str) -> Result<(&'static str, &'static str), String> {
     match action {
@@ -161,10 +171,7 @@ fn handle_tray_schedule(app: &AppHandle, action: &str, spec: &str) {
         (do_immediate_action(action), None)
     } else {
         match spec.parse::<u32>() {
-            Ok(seconds) => (
-                schedule_shutdown(seconds, action.to_string()),
-                Some(seconds),
-            ),
+            Ok(seconds) => (schedule_shutdown(seconds, action.to_string()), Some(seconds)),
             Err(_) => (Err("Délai invalide.".to_string()), None),
         }
     };
@@ -226,6 +233,7 @@ pub fn run() {
                 MenuItem::with_id(app, "shutdown_1800", "Dans 30 minutes", true, None::<&str>)?;
             let shutdown_60_item =
                 MenuItem::with_id(app, "shutdown_3600", "Dans 1 heure", true, None::<&str>)?;
+
             let shutdown_submenu = Submenu::with_items(
                 app,
                 "Éteindre",
@@ -246,6 +254,7 @@ pub fn run() {
                 MenuItem::with_id(app, "restart_1800", "Dans 30 minutes", true, None::<&str>)?;
             let restart_60_item =
                 MenuItem::with_id(app, "restart_3600", "Dans 1 heure", true, None::<&str>)?;
+
             let restart_submenu = Submenu::with_items(
                 app,
                 "Redémarrer",
@@ -428,7 +437,10 @@ mod tests {
     #[test]
     fn command_error_prefers_stderr() {
         let output = output_with_stderr(1, "  accès refusé  \n");
-        assert_eq!(command_error(&output), "accès refusé");
+        assert_eq!(
+            command_error(&output),
+            "La commande shutdown a échoué : accès refusé"
+        );
     }
 
     #[test]
