@@ -19,8 +19,7 @@ fn run_shutdown_command(args: &[&str]) -> Result<Output, String> {
     // Chemin absolu vers l'outil système : passer par une résolution PATH
     // permettrait à un PATH détourné d'exécuter un autre binaire à la place
     // de l'outil d'extinction de Windows.
-    let system_root =
-        std::env::var("SystemRoot").unwrap_or_else(|_| r"C:\Windows".to_string());
+    let system_root = std::env::var("SystemRoot").unwrap_or_else(|_| r"C:\Windows".to_string());
     let mut command = Command::new(format!(r"{system_root}\\System32\\shutdown.exe"));
 
     command.args(args).creation_flags(CREATE_NO_WINDOW);
@@ -171,7 +170,10 @@ fn handle_tray_schedule(app: &AppHandle, action: &str, spec: &str) {
         (do_immediate_action(action), None)
     } else {
         match spec.parse::<u32>() {
-            Ok(seconds) => (schedule_shutdown(seconds, action.to_string()), Some(seconds)),
+            Ok(seconds) => (
+                schedule_shutdown(seconds, action.to_string()),
+                Some(seconds),
+            ),
             Err(_) => (Err("Délai invalide.".to_string()), None),
         }
     };
