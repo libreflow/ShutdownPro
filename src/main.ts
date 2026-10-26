@@ -427,7 +427,12 @@ function applyCancelOutcome(message: string) {
   clearPersistedSchedule();
   setScheduledUiState(false);
   setStatus(message);
-  void notify("ShutdownPro", message);
+  // « Aucune extinction n'était programmée. » n'est pas une information
+  // assez utile pour mériter une notification OS (souvent déclenchée par un
+  // clic réflexe sur Annuler) : le message dans la fenêtre suffit.
+  if (message !== NO_SHUTDOWN_MESSAGE) {
+    void notify("ShutdownPro", message);
+  }
 }
 
 // Une extinction annulée depuis le menu du system tray n'est plus en cours,

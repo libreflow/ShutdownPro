@@ -5,6 +5,10 @@
 
 Application de bureau (Windows) pour programmer l'extinction ou le redémarrage de l'ordinateur, avec icône dans la barre système, démarrage automatique et notifications.
 
+## Contribuer
+
+Voir [CONTRIBUTING.md](CONTRIBUTING.md) — modèles d'issues et de PR, vérifications locales et règles du projet.
+
 ## Fonctionnalités
 
 - Programmer une extinction ou un redémarrage, dans un délai relatif (1 min → 2h, ou personnalisé jusqu'à 24h) ou à une heure fixe.
@@ -66,7 +70,7 @@ Produit un exécutable release (`src-tauri/target/release/tauri-app.exe`, sans c
 ## Stack technique
 
 - Frontend : TypeScript + Vite (sans framework), `@tauri-apps/api`.
-- Backend : [Tauri 2](https://v2.tauri.app/) (Rust), plugins `opener`, `autostart`, `notification`.
+- Backend : [Tauri 2](https://v2.tauri.app/) (Rust), plugins `single-instance`, `autostart`, `notification`.
 - Tests : Vitest (frontend), `cargo test` intégré (backend).
 
 ## Licence
