@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ❓ Question / utilisation
+    url: https://github.com/libreflow/ShutdownPro/discussions
+    about: Posez vos questions d'utilisation ou d'ordre général dans les Discussions.

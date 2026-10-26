@@ -205,7 +205,14 @@ fn handle_tray_schedule(app: &AppHandle, action: &str, spec: &str) {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_opener::init())
+        // Single-instance en premier : sans lui, relancer l'exe (ou laisser
+        // l'autostart se déclencher alors que l'app tourne déjà) créerait une
+        // seconde icône tray, une seconde fenêtre et deux commandes `shutdown`
+        // concurrentes. La seconde instance réaffiche la fenêtre de la
+        // première puis se ferme.
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            show_main_window(app);
+        }))
         .plugin(
             tauri_plugin_autostart::Builder::new()
                 .args(["--hidden"])
