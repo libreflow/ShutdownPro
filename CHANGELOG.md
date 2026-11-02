@@ -6,10 +6,29 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 ## [Unreleased]
 
 ### Ajouté
+- Métadonnées d'éditeur « Libreflow » : `bundle.publisher` dans
+  `tauri.conf.json` (remonte dans l'installeur NSIS et les propriétés
+  Windows) et `authors` dans `Cargo.toml`.
 - Job CI `release` : au push d'un tag `v*`, build de l'installeur NSIS
   (`npm run tauri build`), upload en artifact et création automatique d'une
   GitHub Release avec notes générées — après validation des jobs
   frontend/backend/audit.
+
+### Modifié
+- `withGlobalTauri` passé à `false` dans `tauri.conf.json` : le frontend
+  n'utilise que des imports ES modules de `@tauri-apps/api`, l'API globale
+  `window.__TAURI__` n'est plus exposée inutilement.
+
+### Sécurité
+- Retrait du plugin `opener` (crate Rust, package npm et permission
+  `opener:default`) : il n'était jamais utilisé par le frontend —
+  réduction de la surface d'attaque (moindre privilège).
+- Dépendances npm : `undici` 7.30.0 → 7.30.1 (GHSA-4w7w-5xrc-9h26,
+  GHSA-2m5v-pch6-74hx, GHSA-qrxm-fqhp-jwvm, GHSA-9fm3-97px-rjf6,
+  GHSA-55wc-3pg8-jfw6, GHSA-4qv8-2p9j-2685, GHSA-f72v-6w45-q472,
+  GHSA-xjj6-f33q-929c) et `vitest` 4.1.11 → 4.1.12 /
+  `@vitest/mocker` (GHSA-qxg6-89mg-rqv8, GHSA-xp26-3454-mjgp) —
+  `npm audit --audit-level=moderate` repasse à 0 vulnérabilité.
 
 ### Modifié
 - La commande `shutdown` est désormais invoquée via son chemin absolu

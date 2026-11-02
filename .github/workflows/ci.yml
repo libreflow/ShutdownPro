@@ -86,7 +86,7 @@ jobs:
         run: cargo install cargo-audit --locked
 
       - name: cargo audit
-        # Lit src-tauri/.cargo/audit.toml pour les advisories GTK3/Linux
+        # Lit src-tauri/.cargo/audit.toml pour les advisories Linux
         # ignorées avec justification (code mort sur Windows).
         run: cargo audit
         working-directory: src-tauri

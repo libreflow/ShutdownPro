@@ -9,8 +9,13 @@
 #
 # À revoir si le projet ajoute un jour une cible Linux.
 #
-# Liste vérifiée avec `cargo audit` le 2026-09-01 (17 advisories, toutes
-# GTK3/Linux-only ou transitives de la chaîne GTK3).
+# Liste vérifiée avec `cargo audit` le 2026-11-02 (21 advisories : les 17
+# GTK3/Linux-only historiques, plus 4 datant d'octobre 2026 — 3 crates
+# unmaintained de la chaîne D-Bus `zbus`/`zvariant`, tirée transitivement
+# par `tray-icon` pour Linux et jamais compilée sur la cible Windows
+# (vérifié : `cargo tree -i zbus` ne trouve rien sans `--target all`),
+# et 1 unsoundness `tokio` limitée à l'API Unix-only `AsyncFd`, absente
+# du build Windows).
 
 [advisories]
 ignore = [
@@ -31,4 +36,8 @@ ignore = [
     "RUSTSEC-2025-0100", # unic-ucd-ident — idem
     "RUSTSEC-2025-0098", # unic-ucd-version — idem
     "RUSTSEC-2024-0429", # glib — unsoundness dans un Iterator GTK3, Linux-only ici
+    "RUSTSEC-2026-0371", # zbus_names — unmaintained, chaîne D-Bus tray-icon Linux-only, jamais compilé sur Windows
+    "RUSTSEC-2026-0370", # zvariant — idem
+    "RUSTSEC-2026-0372", # zvariant_derive — idem
+    "RUSTSEC-2026-0386", # tokio — unsoundness AsyncFd, API Unix-only absente du build Windows (tokio tiré par tauri)
 ]

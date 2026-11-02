@@ -2,7 +2,7 @@
 name = "tauri-app"
 version = "0.1.0"
 description = "ShutdownPro — planificateur d'extinction et de redémarrage Windows, avec icône système, démarrage automatique et notifications."
-authors = ["Robin Di Berardini"]
+authors = ["Libreflow"]
 license = "MIT"
 edition = "2021"
 
@@ -20,7 +20,6 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 tauri = { version = "2", features = ["tray-icon"] }
-tauri-plugin-opener = "2"
 tauri-plugin-autostart = "2"
 tauri-plugin-notification = "2"
 serde = { version = "1", features = ["derive"] }

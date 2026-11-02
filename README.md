@@ -50,7 +50,7 @@ npx tsc --noEmit
 cd src-tauri
 cargo fmt --check
 cargo clippy --release --all-targets -- -D warnings
-cargo audit    # lit .cargo/audit.toml pour les advisories GTK3/Linux ignorées (code mort sur Windows)
+cargo audit    # lit .cargo/audit.toml pour les advisories Linux ignorées (code mort sur Windows)
 ```
 
 Ces vérifications tournent automatiquement en CI sur chaque push/PR vers `master` (voir `.github/workflows/ci.yml`).
@@ -66,7 +66,7 @@ Produit un exécutable release (`src-tauri/target/release/tauri-app.exe`, sans c
 ## Stack technique
 
 - Frontend : TypeScript + Vite (sans framework), `@tauri-apps/api`.
-- Backend : [Tauri 2](https://v2.tauri.app/) (Rust), plugins `opener`, `autostart`, `notification`.
+- Backend : [Tauri 2](https://v2.tauri.app/) (Rust), plugins `autostart`, `notification`.
 - Tests : Vitest (frontend), `cargo test` intégré (backend).
 
 ## Licence
