@@ -18,6 +18,13 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 - `withGlobalTauri` passé à `false` dans `tauri.conf.json` : le frontend
   n'utilise que des imports ES modules de `@tauri-apps/api`, l'API globale
   `window.__TAURI__` n'est plus exposée inutilement.
+- Mise à jour des dépendances (plages semver compatibles uniquement) :
+  npm — `@tauri-apps/api`/`cli` 2.12.1 → 2.12.4,
+  `plugin-notification` 2.5.1 → 2.8.0 (aligné avec le crate Rust),
+  `vite` 8.3.3 → 8.3.5 ; Rust — `tauri` 2.12.1 → 2.12.5,
+  `tauri-build` 2.7.1 → 2.7.4, `tauri-plugin-notification` 2.5.1 → 2.8.0,
+  `serde_json` 1.0.151 → 1.0.154, plus les transitives via `cargo update`.
+  Les majors `vitest` 5 et `jsdom` 30 sont volontairement écartées.
 
 ### Sécurité
 - Retrait du plugin `opener` (crate Rust, package npm et permission
