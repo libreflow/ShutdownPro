@@ -6,6 +6,11 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 ## [Unreleased]
 
 ### Ajouté
+- Plugin `tauri-plugin-single-instance` (premier plugin enregistré) :
+  relancer l'exe ou laisser l'autostart se déclencher alors que l'app tourne
+  ne crée plus une seconde icône tray, une seconde fenêtre et deux commandes
+  `shutdown` concurrentes — la seconde instance réaffiche la fenêtre de la
+  première puis se ferme. (Reprise ciblée du PR #4 fermé sans fusion.)
 - Métadonnées d'éditeur « Libreflow » : `bundle.publisher` dans
   `tauri.conf.json` (remonte dans l'installeur NSIS et les propriétés
   Windows) et `authors` dans `Cargo.toml`.
@@ -25,6 +30,10 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
   `tauri-build` 2.7.1 → 2.7.4, `tauri-plugin-notification` 2.5.1 → 2.8.0,
   `serde_json` 1.0.151 → 1.0.154, plus les transitives via `cargo update`.
   Les majors `vitest` 5 et `jsdom` 30 sont volontairement écartées.
+
+### Retiré
+- `src/assets/*.svg` (`tauri.svg`, `typescript.svg`, `vite.svg`) : assets
+  de boilerplate jamais référencés par le HTML, le CSS ou le TS.
 
 ### Sécurité
 - Retrait du plugin `opener` (crate Rust, package npm et permission
