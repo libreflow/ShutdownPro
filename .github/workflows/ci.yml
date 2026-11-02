@@ -83,7 +83,9 @@ jobs:
           workspaces: src-tauri
 
       - name: Install cargo-audit
-        run: cargo install cargo-audit --locked
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
 
       - name: cargo audit
         # Lit src-tauri/.cargo/audit.toml pour les advisories Linux
